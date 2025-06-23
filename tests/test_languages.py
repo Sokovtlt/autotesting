@@ -3,9 +3,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-# Конфигурация
+# Config
 BASE_URL = "https://demo.biometric.sk/"
 
+#Locators
 CZ_LANGUAGE_LOCATOR = (By.XPATH, "//a[@href='?language=czech']")
 EN_LANGUAGE_LOCATOR = (By.XPATH, "//a[@href='?language=english']")
 SK_LANGUAGE_LOCATOR = (By.XPATH, "//a[@href='?language=slovak']")
@@ -43,6 +44,7 @@ def test_language_switch(driver):
     driver.get(BASE_URL)
     wait = WebDriverWait(driver, 10)
 
+    # inicializujme údaje pre každý jazyk
     language = {
         "czech": {
             "login_placeholder":  "Jméno / ID",
@@ -72,7 +74,7 @@ def test_language_switch(driver):
 
     for lang_name, lang_config in language.items():
 
-        # Переключаем язык
+        # Prepnime jazyk striedavo a porovnajte každú hodnotu
         if lang_name == "czech":
             driver.find_element(*CZ_LANGUAGE_LOCATOR).click()
         elif lang_name == "english":
@@ -80,34 +82,35 @@ def test_language_switch(driver):
         elif lang_name == "slovak":
             driver.find_element(*SK_LANGUAGE_LOCATOR).click()
 
+        # login placeholder
         wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
         login_input = driver.find_element(*LOGIN_FIELD_LOCATOR)
         assert login_input.get_attribute("placeholder") == lang_config["login_placeholder"], \
             f"{lang_name}: Unexpected login placeholder"
-
+        # password placeholder
         wait.until(EC.visibility_of_element_located(PASSWORD_FIELD_LOCATOR))
         password_input = driver.find_element(*PASSWORD_FIELD_LOCATOR)
         assert password_input.get_attribute("placeholder") == lang_config["password_placeholder"], \
             f"{lang_name}: Unexpected password placeholder"
-
+        # checkbox label
         wait.until(EC.visibility_of_element_located(CHECKBOX_LOCATOR))
         checkbox_label = driver.find_element(*CHECKBOX_LOCATOR)
         assert checkbox_label.text == lang_config["checkbox_label_text"], \
             f"{lang_name}: Unexpected checkbox label"
-
+        # forget password text
         wait.until(EC.visibility_of_element_located(FORGET_PASS_LOCATOR))
         forget_pass = driver.find_element(*FORGET_PASS_LOCATOR)
         assert forget_pass.text == lang_config["forget_pass_text"], \
             f"{lang_name}: Unexpected forget password text"
-
+        # ubmit button text
         wait.until(EC.visibility_of_element_located(SUBMIT_BUTTON_LOCATOR))
         submit_button = driver.find_element(*SUBMIT_BUTTON_LOCATOR)
         assert submit_button.get_attribute("value") == lang_config["submit_button_value"], \
             f"{lang_name}: Unexpected submit button text"
-
+        # title
         assert driver.title == lang_config["title"], f"{lang_name}: Unexpected page title"
 
-        # Обновление страницы и повторная проверка title
+        # Refresh stránky a opätovná kontrola title
         driver.refresh()
         wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
         assert driver.title == lang_config["title"], f"{lang_name}: Title mismatch after refresh"

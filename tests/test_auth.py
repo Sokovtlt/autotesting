@@ -1,5 +1,5 @@
 import uuid
-import time
+import re
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -45,34 +45,40 @@ def test_login(driver):
         - Titulok stránky je „Dashboard | Demo“.
     """
 
-    # Открытие страницы
+    # Otvorenie stránky
     driver.get(BASE_URL)
+    # Čakáme až 10 sekúnd, kým nenastane požadovaná podmienka. Ak nastane skôr — ideme ďalej,
+    # ak nie — nastane chyba TimeoutException.
     wait = WebDriverWait(driver, 10)
 
-    # Ожидание и ввод логина
+    # Očakávanie, že pole pre vstup je dostupné
     login_input = wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
     assert login_input.is_enabled(), "Login input is not enabled"
+    # Zadanie prihlasovacieho mena
     login_input.send_keys(LOGIN)
+    # Kontrola, že hodnoty sú rovnaké
     assert login_input.get_attribute("value") == LOGIN, "Login input value mismatch"
 
-    # Ввод пароля
+    # Očakávanie, že pole pre zadanie je k dispozícii
     password_input = wait.until(EC.visibility_of_element_located(PASSWORD_FIELD_LOCATOR))
     assert password_input.is_enabled(), "Password input is not enabled"
+    # Zadanie hesla
     password_input.send_keys(PASSWORD)
+    # Kontrola, že hodnoty sú rovnaké
     assert password_input.get_attribute("value") == PASSWORD, "Password input value mismatch"
 
-    # Клик по кнопке входа
+    # Očakávanie, že tlačidlo je klikateľné a kliknutie na tlačidlo prihlásenia
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
 
-    # Проверка URL после входа
+    # Kontrola, že URL sa po prihlásení zhoduje s očakávaným.
     WebDriverWait(driver, 10).until(
         EC.url_to_be(EXPECTED_URL)
     )
     current_url = driver.current_url
     assert current_url == EXPECTED_URL, f"Expected URL: {EXPECTED_URL}, Actual URL: {current_url}"
 
-    # Проверка заголовка
+    # Kontrola Title
     current_title = driver.title
     assert current_title == EXPECTED_TITLE, f"Expected title: {EXPECTED_TITLE}, Actual title: {current_title}"
 
@@ -97,45 +103,49 @@ def test_login_invalid_credentials(driver):
 
     driver.get(BASE_URL)
     wait = WebDriverWait(driver, 10)
-    EXPECTED_URL_AFTER_WRONG_DATA = "https://demo.biometric.sk/Pages/Account/Login?ReturnUrl=%2fPages%2fDashboard"
 
-    # Ввод некорректного логина
+    # Očakávanie, že pole pre vstup je dostupné
     login_input = wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
     assert login_input.is_enabled(), "Login input is not enabled"
+    # Zadanie prihlasovacieho mena
     login_input.send_keys(INVALID_LOGIN)
+    # Kontrola, že hodnoty sú rovnaké
     assert login_input.get_attribute("value") == INVALID_LOGIN, "Login input value mismatch"
 
-    # Ввод некорректного пароля
+    # Očakávanie, že pole pre zadanie je k dispozícii
     password_input = wait.until(EC.visibility_of_element_located(PASSWORD_FIELD_LOCATOR))
     assert password_input.is_enabled(), "Password input is not enabled"
+    # Zadanie nesprávneho hesla
     password_input.send_keys(INVALID_PASSWORD)
+    # Kontrola, že hodnoty sú rovnaké
     assert password_input.get_attribute("value") == INVALID_PASSWORD, "Password input value mismatch"
 
-    # Попытка входа
+    # Pokús o prihlásenie
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
 
+    # Overenie, či sme na stránke, ktorú očakávame po neúspešnom prihlásení.
     assert driver.current_url == EXPECTED_URL_AFTER_WRONG_DATA, \
         f"Expected to stay on login page. Initial: {EXPECTED_URL_AFTER_WRONG_DATA}, Final: {driver.current_url}"
 
-    time.sleep(3)
-
-    # Проверка наличия сообщения об ошибке
+    # Kontrola dostupnosti chybových správ
     error_message = wait.until(EC.visibility_of_element_located(ERROR_MESSAGE_LOCATOR))
-
+    # Zobrazí sa kontrola, či je správa na popup
     assert error_message.is_displayed(), "Error message not displayed"
     actual_text = error_message.text.strip().lower()
+    # Skontrolujte, či sa správa zhoduje s očakávanými
     assert EXPECTED_ERROR_SNIPPET in actual_text, f"Unexpected error message content:\n{actual_text}"
 
-    # кнопка ok
+    # Kontrola, či existuje tlačidlo OK
     error_ok_button = wait.until(EC.element_to_be_clickable(ERROR_BUTTON_LOCATOR))
-    error_ok_button.click()
+    error_ok_button.click() # Tlačíme tlačidlo
+    # Kontrolujeme, či sa zmizla vyskakovacia správa o chybe.
     assert wait.until(EC.invisibility_of_element(error_message)), "The message is still displayed"
-    time.sleep(3)
 
 
 def test_trying_counter(driver):
     """
+    EXTRA TEST
     Testovacia prípadová štúdia: Počet zostávajúcich pokusov
 
     Cieľ:
@@ -153,54 +163,58 @@ def test_trying_counter(driver):
     driver.get(BASE_URL)
     wait = WebDriverWait(driver, 10)
 
-    # Первый ввод — чтобы получить текущее значение попыток
+    # Prvý vstup — aby ste získali aktuálnu hodnotu pokusov
+    # Login
     login_input = wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
-    login_input.clear()
+    login_input.clear() # Vymazať, ak je v poli niečo zadané.
     login_input.send_keys(INVALID_LOGIN_1)
-
+    # Password
     password_input = wait.until(EC.visibility_of_element_located(PASSWORD_FIELD_LOCATOR))
-    password_input.clear()
+    password_input.clear() # Vymazať, ak je v poli niečo zadané.
     password_input.send_keys(INVALID_PASSWORD)
-
+    # Click button
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
-
+    # Kontrola dostupnosti chybových správ
     error_message = wait.until(EC.visibility_of_element_located(ERROR_MESSAGE_LOCATOR))
     assert error_message.is_displayed(), "Error message not displayed"
     initial_text = error_message.text.strip().lower()
-
-    import re
+    # Určujeme počet zostávajúcich pokusov
     match = re.search(r"zostávajúci počet pokusov: (\d+)", initial_text)
     assert match, f"Could not find remaining attempts in message:\n{initial_text}"
     initial_count = int(match.group(1))
 
-    # Закрытие сообщения
+    # Zavrieť správu
     error_ok_button = wait.until(EC.element_to_be_clickable(ERROR_BUTTON_LOCATOR))
     error_ok_button.click()
     wait.until(EC.invisibility_of_element(error_message))
 
-    # Проверка убывания количества попыток
+    # Kontrola ubúdania počtu pokusov
     for expected_count in range(initial_count - 1, initial_count - 3, -1):
+        # Login
         login_input = wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
         login_input.clear()
         login_input.send_keys(INVALID_LOGIN_1)
-
+        # Password
         password_input = wait.until(EC.visibility_of_element_located(PASSWORD_FIELD_LOCATOR))
         password_input.clear()
         password_input.send_keys(INVALID_PASSWORD)
-
+        # Zavrieť správu
         submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
         submit_button.click()
-
+        # Kontrola, že URL je stale správny.
         assert driver.current_url == EXPECTED_URL_AFTER_WRONG_DATA, \
             f"Expected to stay on login page. Final: {driver.current_url}"
-
+        # Kontrola dostupnosti chybových správ
         error_message = wait.until(EC.visibility_of_element_located(ERROR_MESSAGE_LOCATOR))
         assert error_message.is_displayed(), "Error message not displayed"
         actual_text = error_message.text.strip().lower()
+
+        # Skontrolujme, či sa počet pokusov znížil očakávaným spôsobom
         assert f"zostávajúci počet pokusov: {expected_count}" in actual_text, \
             f"Expected try count {expected_count} not found in message:\n{actual_text}"
 
+        # Zavrieť správu
         error_ok_button = wait.until(EC.element_to_be_clickable(ERROR_BUTTON_LOCATOR))
         error_ok_button.click()
         wait.until(EC.invisibility_of_element(error_message))

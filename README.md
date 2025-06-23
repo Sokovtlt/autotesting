@@ -112,6 +112,25 @@ autotesting/
 
 ---
 
+## 🔍 Prečo som si vybral Pytest a Selenium
+
+### ✅ Selenium
+Selenium je overený a široko používaný nástroj na testovanie webových aplikácií. Vybral som ho preto, že:
+
+- Umožňuje **realistickú interakciu s webovou stránkou**, ako to robí skutočný používateľ (zadávanie údajov, klikanie, overovanie textu).
+- Podporuje **všetky hlavné prehliadače** (Chrome, Firefox, Edge), čo je dôležité pre testovanie kompatibility.
+- Má rozsiahlu dokumentáciu a komunitu.
+
+### ✅ Pytest
+Pytest som zvolil ako testovací rámec, pretože:
+
+- Je **jednoduchý na použitie** – testy sú prehľadné, čitateľné a rýchlo sa píšu.
+- Podporuje **fixtures**, ktoré zjednodušujú opakované nastavenia (napr. inicializácia prehliadača).
+- Má silnú integráciu s CI/CD nástrojmi (GitHub Actions, GitLab CI atď.).
+- Výsledky testov sú **prehľadné a dobre logované**.
+
+---
+
 ## 🧑‍💻 Autor
 
 Sergej Sokov – 2025
