@@ -101,6 +101,18 @@ pytest tests/ --verbose -s
 HEADLESS=1 pytest tests/ --verbose -s
 ```
 
+### Uloženie reportov (lokálne)
+
+Ak si želáte uložiť výsledky testov do formátu HTML a JSON lokálne, použite:
+
+```bash
+HEADLESS=1 pytest tests/ --verbose -s --json-report --html=report.html
+```
+
+Výsledky sa uložia do súborov:
+- `report.html` – prehľadný vizuálny report otvoriteľný v prehliadači
+- `report.json` – strojovo čitateľný výstup vhodný pre integráciu s inými nástrojmi
+
 ---
 
 ## Integrácia s CI/CD

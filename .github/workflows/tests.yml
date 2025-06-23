@@ -28,4 +28,13 @@
        - name: Spustenie testov
          run: |
            source venv/bin/activate
-           pytest tests/ --verbose --tb=short
+           pytest tests/ --verbose --tb=short --json-report --html=report.html
+
+       - name: Uloženie reportov ako artefakty
+         uses: actions/upload-artifact@v4
+         with:
+           name: test-reports
+           path: |
+             report.html
+             report.json
+
