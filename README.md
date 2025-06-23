@@ -99,7 +99,7 @@ HEADLESS=1 pytest tests/ --verbose -s
 
 ---
 
-## 🔍 Prečo som si vybral Pytest a Selenium
+## Prečo som si vybral Pytest a Selenium
 
 ### Selenium
 Selenium je overený a široko používaný nástroj na testovanie webových aplikácií. Vybral som ho preto, že:
@@ -173,7 +173,7 @@ Konfigurácia pre `tests.yml`:
 ```
 ---
 
-### 📧 Odosielanie reportov e-mailom
+### Odosielanie reportov e-mailom
 
 Okrem Slacku je možné zasielať testovacie reporty aj priamo na e-mail vo forme príloh (napr. `report.html` a `report.json`).
 
@@ -190,7 +190,7 @@ Okrem Slacku je možné zasielať testovacie reporty aj priamo na e-mail vo form
     server_port: 465
     username: ${{ secrets.EMAIL_USERNAME }}
     password: ${{ secrets.EMAIL_PASSWORD }}
-    subject: 📋 Výsledky testov z GitHub Actions
+    subject:  Výsledky testov z GitHub Actions
     to: ${{ secrets.EMAIL_TO }}
     from: Automatizovaný Testovací Systém
     secure: true
@@ -225,11 +225,3 @@ autotesting/
 ├── requirements.txt     # Zoznam závislostí
 └── README.md            # Tento súbor
 ```
-
----
-
-
-
-## 🧑‍💻 Autor
-
-Sergei Sokov – 2025
