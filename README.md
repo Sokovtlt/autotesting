@@ -20,10 +20,6 @@ Používateľ je na stránke: https://demo.biometric.sk/
 Používateľ bude presmerovaný na Dashboard:  
 https://demo.biometric.sk/Pages/Dashboard
 
-**Prihlasovacie údaje:**  
-- Meno: `65`  
-- Heslo: `Test1234`
-
 ---
 
 ### Test Case 1B – Neúspešné prihlásenie
