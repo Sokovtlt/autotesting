@@ -1,0 +1,31 @@
+ name: Spustenie testov
+
+ on:
+   push:
+     branches: [ main ]
+   pull_request:
+     branches: [ main ]
+
+ jobs:
+   test:
+     runs-on: ubuntu-latest
+
+     steps:
+       - uses: actions/checkout@v3
+
+       - name: Nastavenie Python prostredia
+         uses: actions/setup-python@v4
+         with:
+           python-version: "3.12"
+
+       - name: Inštalácia závislostí
+         run: |
+           python -m venv venv
+           source venv/bin/activate
+           pip install -r requirements.txt
+           pip install pytest
+
+       - name: Spustenie testov
+         run: |
+           source venv/bin/activate
+           pytest tests/ --verbose --tb=short
