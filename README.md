@@ -1,4 +1,3 @@
-
 # Automatizované testovanie aplikácie Biometric
 
 Tento projekt obsahuje automatizované testy pre webovú aplikáciu [https://demo.biometric.sk](https://demo.biometric.sk) pomocou knižnice `selenium` a `pytest`.
@@ -104,7 +103,14 @@ HEADLESS=1 pytest tests/ --verbose -s
 
 ---
 
-## 📁 Štruktúra priečinkov
+## Integrácia s CI/CD
+
+Tieto testy sú integrované v CI pipelinu (GitHub Actions). Spúšťajú sa automaticky pri každej zmene v hlavnej vetve (`main`).  
+To zabezpečuje, že každá zmena v kóde je automaticky overená a neporušuje existujúcu funkcionalitu.
+
+---
+
+## Štruktúra priečinkov
 
 ```
 autotesting/
@@ -117,14 +123,14 @@ autotesting/
 
 ## 🔍 Prečo som si vybral Pytest a Selenium
 
-### ✅ Selenium
+### Selenium
 Selenium je overený a široko používaný nástroj na testovanie webových aplikácií. Vybral som ho preto, že:
 
 - Umožňuje **realistickú interakciu s webovou stránkou**, ako to robí skutočný používateľ (zadávanie údajov, klikanie, overovanie textu).
 - Podporuje **všetky hlavné prehliadače** (Chrome, Firefox, Edge), čo je dôležité pre testovanie kompatibility.
 - Má rozsiahlu dokumentáciu a komunitu.
 
-### ✅ Pytest
+### Pytest
 Pytest som zvolil ako testovací rámec, pretože:
 
 - Je **jednoduchý na použitie** – testy sú prehľadné, čitateľné a rýchlo sa píšu.
