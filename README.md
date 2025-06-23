@@ -101,37 +101,7 @@ pytest tests/ --verbose -s
 HEADLESS=1 pytest tests/ --verbose -s
 ```
 
-### Uloženie reportov (lokálne)
-
-Ak si želáte uložiť výsledky testov do formátu HTML a JSON lokálne, použite:
-
-```bash
-HEADLESS=1 pytest tests/ --verbose -s --json-report --html=report.html
-```
-
-Výsledky sa uložia do súborov:
-- `report.html` – prehľadný vizuálny report otvoriteľný v prehliadači
-- `report.json` – strojovo čitateľný výstup vhodný pre integráciu s inými nástrojmi
-
 ---
-
-## Integrácia s CI/CD
-
-Tieto testy sú integrované v CI pipelinu (GitHub Actions). Spúšťajú sa automaticky pri každej zmene v hlavnej vetve (`main`).  
-To zabezpečuje, že každá zmena v kóde je automaticky overená a neporušuje existujúcu funkcionalitu.
-
----
-
-## Štruktúra priečinkov
-
-```
-autotesting/
-│
-├── tests/               # Obsahuje testovacie súbory
-├── venv/                # Virtuálne prostredie
-├── requirements.txt     # Zoznam závislostí
-└── README.md            # Tento súbor
-```
 
 ## 🔍 Prečo som si vybral Pytest a Selenium
 
@@ -152,6 +122,118 @@ Pytest som zvolil ako testovací rámec, pretože:
 
 ---
 
+## Integrácia s CI/CD
+
+Tieto testy sú integrované v CI pipelinu (GitHub Actions). Spúšťajú sa automaticky pri každej zmene v hlavnej vetve (`main`).  
+To zabezpečuje, že každá zmena v kóde je automaticky overená a neporušuje existujúcu funkcionalitu.
+
+---
+
+### Uloženie reportov (lokálne)
+
+Ak si želáte uložiť výsledky testov do formátu HTML a JSON lokálne, použite:
+
+```bash
+HEADLESS=1 pytest tests/ --verbose -s --json-report --html=report.html
+```
+
+Výsledky sa uložia do súborov:
+- `report.html` – prehľadný vizuálny report otvoriteľný v prehliadači
+- `report.json` – strojovo čitateľný výstup vhodný pre integráciu s inými nástrojmi
+
+![Ukážka html reportu](assets/report.png)
+
+---
+
+### Notifikácie do Slacku
+
+Je možné nastaviť notifikácie o výsledkoch testov priamo do aplikácie Slack pomocou GitHub Actions.  
+Napríklad, ak testy zlyhajú alebo prebehnú úspešne, do vybraného Slack kanála sa automaticky odošle správa.
+
+Konfigurácia pre `tests.yml`:
+
+```yaml
+- name: Notifikácia do Slacku pri neúspešných testoch
+  if: failure()
+  uses: slackapi/slack-github-action@v1.24.0
+  with:
+    payload: |
+      {
+        "text": ":x: Testy zlyhali v `${{ github.workflow }}` na branche `${{ github.ref_name }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Zobraziť výsledky>"
+      }
+  env:
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+- name: Notifikácia do Slacku pri úspešnom prechode testov
+  if: success()
+  uses: slackapi/slack-github-action@v1.24.0
+  with:
+    payload: |
+      {
+        "text": ":white_check_mark: Všetky testy prebehli úspešne v `${{ github.workflow }}` na branche `${{ github.ref_name }}`"
+      }
+  env:
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+```
+---
+
+### 📧 Odosielanie reportov e-mailom
+
+Okrem Slacku je možné zasielať testovacie reporty aj priamo na e-mail vo forme príloh (napr. `report.html` a `report.json`).
+
+#### Konfigurácia pomocou GitHub Actions
+
+1. Pridajte do `tests.yml` nasledovný krok po spustení testov:
+
+```yaml
+- name: Odoslanie reportu e-mailom
+  uses: dawidd6/action-send-mail@v3
+  if: always()
+  with:
+    server_address: smtp.gmail.com
+    server_port: 465
+    username: ${{ secrets.EMAIL_USERNAME }}
+    password: ${{ secrets.EMAIL_PASSWORD }}
+    subject: 📋 Výsledky testov z GitHub Actions
+    to: ${{ secrets.EMAIL_TO }}
+    from: Automatizovaný Testovací Systém
+    secure: true
+    body: |
+      Zdravím tím,
+
+      V prílohe nájdete výsledky posledného spustenia testov z CI pipeline.
+
+      Workflow: ${{ github.workflow }}
+      Commit: ${{ github.sha }}
+      Dátum: ${{ github.event.head_commit.timestamp }}
+
+      S pozdravom,  
+      Testovací bot
+    attachments: report.html,report.json
+```
+
+2. V repozitári uložte nasledovné tajomstvá (`Settings → Secrets → Actions`):
+   - `EMAIL_USERNAME`: e-mailová adresa odosielateľa (napr. `ci-bot@test.sk`)
+   - `EMAIL_PASSWORD`: heslo alebo app password
+   - `EMAIL_TO`: cieľová e-mailová adresa (napr. `test@test.sk`)
+
+---
+
+## Štruktúra priečinkov
+
+```
+autotesting/
+│
+├── tests/               # Obsahuje testovacie súbory
+├── venv/                # Virtuálne prostredie
+├── requirements.txt     # Zoznam závislostí
+└── README.md            # Tento súbor
+```
+
+---
+
+
+
 ## 🧑‍💻 Autor
 
-Sergej Sokov – 2025
+Sergei Sokov – 2025
