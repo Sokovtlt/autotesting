@@ -1,4 +1,4 @@
-import uuid
+import pytest
 import re
 
 from selenium.webdriver.common.by import By
@@ -15,9 +15,6 @@ LOGIN = "65"
 PASSWORD = "Test1234"
 INVALID_PASSWORD = "wrong_pass"
 
-INVALID_LOGIN = f"wrong_user_{uuid.uuid4().hex[:6]}"
-INVALID_LOGIN_1 = f"70"
-
 # Locators
 LOGIN_FIELD_LOCATOR = (By.ID, "TextBoxUsername")
 PASSWORD_FIELD_LOCATOR = (By.ID, "TextBoxPassword")
@@ -26,6 +23,18 @@ ERROR_MESSAGE_LOCATOR = (By.ID, "swal2-content")
 ERROR_BUTTON_LOCATOR = (By.CLASS_NAME, "swal2-confirm")
 EXPECTED_ERROR_SNIPPET = "zadali ste nesprávne meno alebo heslo"
 
+
+def check_account_blocked(wait):
+    try:
+        # Kontrola dostupnosti chybových správ
+        error_message = wait.until(EC.visibility_of_element_located(ERROR_MESSAGE_LOCATOR))
+        # Zobrazí sa kontrola, či je správa na popup
+        message_text = error_message.text.strip().lower()
+        # Skontrolujte, či sa správa zhoduje s očakávanými
+        if "účet bude zablokovaný" in message_text:
+            pytest.fail(f"účet bude zablokovaný: '{message_text}'")
+    except Exception as e:
+        print("There is not a ban message")
 
 
 def test_login(driver):
@@ -71,10 +80,13 @@ def test_login(driver):
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
 
+    check_account_blocked(wait)
+
     # Kontrola, že URL sa po prihlásení zhoduje s očakávaným.
     WebDriverWait(driver, 10).until(
         EC.url_to_be(EXPECTED_URL)
     )
+
     current_url = driver.current_url
     assert current_url == EXPECTED_URL, f"Expected URL: {EXPECTED_URL}, Actual URL: {current_url}"
 
@@ -125,6 +137,8 @@ def test_login_invalid_credentials(driver):
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
 
+    check_account_blocked(wait)
+
     # Overenie, či sme na stránke, ktorú očakávame po neúspešnom prihlásení.
     assert driver.current_url == EXPECTED_URL_AFTER_WRONG_DATA, \
         f"Expected to stay on login page. Initial: {EXPECTED_URL_AFTER_WRONG_DATA}, Final: {driver.current_url}"
@@ -169,7 +183,7 @@ def test_trying_counter(driver):
     # Login
     login_input = wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
     login_input.clear()
-    login_input.send_keys(INVALID_LOGIN_1)
+    login_input.send_keys(LOGIN)
 
     # Password
     password_input = wait.until(EC.visibility_of_element_located(PASSWORD_FIELD_LOCATOR))
@@ -179,6 +193,8 @@ def test_trying_counter(driver):
     # Click button
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
+
+    check_account_blocked(wait)
 
     # Kontrola dostupnosti chybových správ
     error_message = wait.until(EC.visibility_of_element_located(ERROR_MESSAGE_LOCATOR))
@@ -201,7 +217,7 @@ def test_trying_counter(driver):
         # Login
         login_input = wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
         login_input.clear()
-        login_input.send_keys(INVALID_LOGIN_1)
+        login_input.send_keys(LOGIN)
 
         # Password
         password_input = wait.until(EC.visibility_of_element_located(PASSWORD_FIELD_LOCATOR))
@@ -211,6 +227,8 @@ def test_trying_counter(driver):
         # Zavrieť správu
         submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
         submit_button.click()
+
+        check_account_blocked(wait)
 
         # Kontrola, že URL je stale správny.
         assert driver.current_url == EXPECTED_URL_AFTER_WRONG_DATA, \
