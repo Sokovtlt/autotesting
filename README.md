@@ -134,8 +134,8 @@ HEADLESS=1 pytest tests/ --verbose -s --json-report --html=report.html
 ```
 
 Výsledky sa uložia do súborov:
-- `report.html` – prehľadný vizuálny report otvoriteľný v prehliadači
-- `report.json` – strojovo čitateľný výstup vhodný pre integráciu s inými nástrojmi
+- `report.html` – prehľadný vizuálny report otvoriteľný v prehliadači. [open file](report-example/report.html)
+- `report.json` – strojovo čitateľný výstup vhodný pre integráciu s inými nástrojmi. [open file](report-example/report.json)
 
 ![Ukážka html reportu](assets/report.png)
 
