@@ -108,7 +108,7 @@ def test_language_switch(driver):
         assert forget_pass.text == lang_config["forget_pass_text"], \
             f"{lang_name}: Unexpected forget password text"
 
-        # ubmit button text
+        # submit button text
         wait.until(EC.visibility_of_element_located(SUBMIT_BUTTON_LOCATOR))
         submit_button = driver.find_element(*SUBMIT_BUTTON_LOCATOR)
         assert submit_button.get_attribute("value") == lang_config["submit_button_value"], \
