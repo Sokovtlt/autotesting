@@ -25,6 +25,12 @@ EXPECTED_ERROR_SNIPPET = "zadali ste nesprávne meno alebo heslo"
 
 
 def check_account_blocked(wait):
+    """
+    Pomocná funkcia pre kontrolu, či používateľ nie je zablokovaný.
+
+    Ak sa objaví hlásenie o blokovaní účtu (napr. „účet bude zablokovaný“),
+    test sa okamžite ukončí s chybou.
+    """
     try:
         # Kontrola dostupnosti chybových správ
         error_message = wait.until(EC.visibility_of_element_located(ERROR_MESSAGE_LOCATOR))
@@ -80,6 +86,7 @@ def test_login(driver):
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
 
+    # Pomocná funkcia pre kontrolu, či používateľ nie je zablokovaný
     check_account_blocked(wait)
 
     # Kontrola, že URL sa po prihlásení zhoduje s očakávaným.
@@ -137,6 +144,7 @@ def test_login_invalid_credentials(driver):
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
 
+    # Pomocná funkcia pre kontrolu, či používateľ nie je zablokovaný
     check_account_blocked(wait)
 
     # Overenie, či sme na stránke, ktorú očakávame po neúspešnom prihlásení.
@@ -194,6 +202,7 @@ def test_trying_counter(driver):
     submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
     submit_button.click()
 
+    # Pomocná funkcia pre kontrolu, či používateľ nie je zablokovaný
     check_account_blocked(wait)
 
     # Kontrola dostupnosti chybových správ
@@ -228,6 +237,7 @@ def test_trying_counter(driver):
         submit_button = wait.until(EC.element_to_be_clickable(SUBMIT_BUTTON_LOCATOR))
         submit_button.click()
 
+        # Pomocná funkcia pre kontrolu, či používateľ nie je zablokovaný
         check_account_blocked(wait)
 
         # Kontrola, že URL je stale správny.
