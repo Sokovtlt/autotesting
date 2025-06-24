@@ -122,7 +122,6 @@ def test_login_invalid_credentials(driver):
 
     driver.get(BASE_URL)
     wait = WebDriverWait(driver, 10)
-    EXPECTED_URL_AFTER_WRONG_DATA = "https://demo.biometric.sk/Pages/Account/Login?ReturnUrl=%2fPages%2fDashboard"
 
     # Očakávanie, že pole pre vstup je dostupné
     login_input = wait.until(EC.visibility_of_element_located(LOGIN_FIELD_LOCATOR))
