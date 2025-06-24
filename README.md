@@ -87,12 +87,12 @@ pip install -r requirements.txt
 
 4. Spusť testy:
 
-   S GUI
+S GUI
 ```bash
 pytest tests/ --verbose -s
 ```
 
-   Bez GUI:
+Bez GUI:
 ```bash
 HEADLESS=1 pytest tests/ --verbose -s
 ```
